@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "智能取关 (推特版)",
+  "version": "1.0.0",
+  "description": "帮助用户更智能地管理他们的 Twitter/X 关注列表。它允许你预览关注列表，选择想要保留的账号，然后批量取消关注其余**未关注你且**未标记保留的账号。",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.twitter.com/*",
+    "*://*.x.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.twitter.com/*", "*://*.x.com/*"],
+      "js": ["content-script.js", "unfollow.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

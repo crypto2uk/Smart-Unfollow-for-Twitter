@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Twitter Unfollow All</title>
+  <style>
+    :root {
+      --primary-color: #1DA1F2;
+      --accent-color: #E0245E;
+      --bg-color: #FFFFFF;
+      --text-color: #14171A;
+      --light-gray: #E1E8ED;
+      --medium-gray: #AAB8C2;
+      --dark-gray: #657786;
+      --shadow-color: rgba(101, 119, 134, 0.2);
+      --success-color: #17BF63;
+      --warning-color: #FFAD1F;
+      --kept-color: #E8F5FD;
+      --kept-border: #1DA1F2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      height: auto;
+    }
+    
+    body {
+      width: 350px;
+      height: 530px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 10px var(--shadow-color);
+      line-height: 1.4;
+      padding: 8px;
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      margin-right: 10px;
+      color: var(--primary-color);
+      font-size: 24px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: stretch;
+      height: 36px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px var(--shadow-color);
+      text-align: center;
+      height: 40px;
+      line-height: 1;
+    }
+
+    #startButton {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    #startButton:hover:not(:disabled) {
+      background-color: #d01a4e;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transform: translateY(-1px);
+    }
+
+    #previewButton {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    #previewButton:hover:not(:disabled) {
+      background-color: #1991db;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transform: translateY(-1px);
+    }
+
+    #stopButton {
+      background-color: var(--accent-color);
+      color: white;
+      display: none;
+    }
+
+    #stopButton:hover:not(:disabled) {
+      background-color: #d01a4e;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background-color: var(--light-gray);
+      color: var(--dark-gray);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+      opacity: 0.8;
+    }
+
+    #confirmUnfollowBtn {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    #confirmUnfollowBtn:hover:not(:disabled) {
+      background-color: #d01a4e;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transform: translateY(-1px);
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--text-color);
+      min-height: 20px;
+      padding: 8px;
+      background: var(--light-gray);
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .progress-container {
+      margin-top: 15px;
+      display: none;
+      padding: 15px;
+      background: var(--kept-color);
+      border-radius: 8px;
+      border: 1px solid var(--light-gray);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--light-gray);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .stats {
+      margin-top: 15px;
+      font-size: 13px;
+      color: var(--text-color);
+      display: grid;
+      gap: 8px;
+    }
+
+    .stats div {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .stats span {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .warning {
+      margin-top: 15px;
+      font-size: 12px;
+      color: var(--accent-color);
+      display: none;
+      padding: 10px;
+      background: #FFE9EF;
+      border-radius: 8px;
+      border: 1px solid var(--accent-color);
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .warning {
+      animation: pulse 2s infinite;
+    }
+
+    #accountsListContainer {
+      margin-top: 10px;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px;
+      background: var(--bg-color);
+      border-radius: 8px;
+      border: 1px solid var(--light-gray);
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-color) var(--light-gray);
+    }
+
+    #accountsListContainer::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #accountsListContainer::-webkit-scrollbar-track {
+      background: var(--light-gray);
+      border-radius: 3px;
+    }
+
+    #accountsListContainer::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    .account-item {
+      display: flex;
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--light-gray);
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px;
+      margin-bottom: 2px;
+      transition: all 0.2s ease;
+      width: 100%;
+      height: 46px;
+      min-height: 46px;
+    }
+
+    .account-item:hover {
+      background: #F5F8FA;
+    }
+
+    .account-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .account-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      padding: 3px 5px;
+      border-radius: 6px;
+    }
+
+    .account-info:hover {
+      background-color: rgba(29, 161, 242, 0.1);
+    }
+
+    .account-name {
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 13px;
+    }
+
+    .account-username {
+      font-size: 11px;
+      color: var(--dark-gray);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .account-username a {
+      color: var(--dark-gray);
+      text-decoration: none;
+      transition: color 0.2s ease, text-decoration 0.2s ease;
+    }
+    
+    .account-username a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+
+    .loading-spinner {
+      margin: 20px auto;
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(29, 161, 242, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .keep-checkbox {
+      display: flex;
+      align-items: center;
+      margin-left: 5px;
+      flex-shrink: 0;
+    }
+
+    .keep-checkbox input[type="checkbox"] {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--medium-gray);
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .keep-checkbox input[type="checkbox"]:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .keep-checkbox input[type="checkbox"]:hover {
+      border-color: var(--primary-color);
+    }
+
+    .keep-checkbox input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .keep-checkbox label {
+      margin-left: 3px;
+      color: var(--primary-color);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .account-item.kept {
+      background-color: var(--kept-color);
+      border-left: 3px solid var(--kept-border);
+    }
+    
+    .accounts-summary {
+      margin-top: 5px;
+      font-size: 14px;
+      color: var(--text-color);
+      text-align: center;
+      margin-bottom: 10px;
+      background: var(--light-gray);
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .accounts-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 10px;
+      background: #F5F8FA;
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px var(--shadow-color);
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .stat-item:nth-child(2) .stat-value {
+      color: var(--accent-color);
+    }
+    
+    .stat-item:nth-child(3) .stat-value {
+      color: var(--success-color);
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--dark-gray);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .section-title {
+      margin-top: 8px;
+      margin-bottom: 8px;
+      color: var(--text-color);
+      font-weight: 700;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    #accountsList {
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+      </svg>
+    </div>
+    <div class="title">智能取关 (推特版)</div>
+  </div>
+  <div class="button-container">
+    <button id="startButton">开始取消关注</button>
+    <button id="previewButton">搜索待取消账号</button>
+    <button id="stopButton">停止</button>
+    <button id="confirmUnfollowBtn" style="display: none;">确认取消关注</button>
+  </div>
+  <div id="actions-container" style="text-align: center; margin-top: 8px;">
+    <a href="#" id="scrollToBottomLink" style="color: var(--primary-color); font-size: 13px; text-decoration: none;">滚动到页面底部</a>
+  </div>
+  <div id="status">点击按钮开始...</div>
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="stats">
+      <div>已找到 <span id="totalAccounts">0</span> 个账号</div>
+      <div>已取消关注 <span id="unfollowedCount">0</span> 个</div>
+      <div>已用时间 <span id="timeElapsed">0:00</span></div>
+    </div>
+  </div>
+  <div id="warning" class="warning">
+    检测到频率限制，正在等待继续...
+  </div>
+  <div id="accountsListContainer">
+    <div class="section-title">待取消关注账号列表</div>
+    <div class="accounts-stats" id="accountsStats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalFoundAccounts">0</div>
+        <div class="stat-label">总账号</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="unkeptAccounts">0</div>
+        <div class="stat-label">待取消关注</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="keptAccounts">0</div>
+        <div class="stat-label">已标记保留</div>
+      </div>
+    </div>
+    <div id="accountsList"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
