@@ -1,6 +1,8 @@
 # Smart Unfollow for Twitter / 智能取关 (推特版)
 
-[![][preview-shield]][preview-url]
+<!-- Optional: Add badges here -->
+<!-- [![Version][version-shield]][version-url] -->
+[![License: GPL v3][license-shield]][license-url]
 
 一款 Chrome 扩展程序，旨在帮助用户更智能地管理他们的 Twitter/X 关注列表。它允许你预览关注列表，选择想要保留的账号，然后批量取消关注其余**未关注你且**未标记保留的账号。
 
@@ -16,9 +18,6 @@
 
 **继续安装和使用本扩展，即表示你已阅读、理解并同意承担上述所有风险，并同意免除开发者的一切责任。**
 
-<!-- Optional: Add badges here -->
-<!-- [![Version][version-shield]][version-url] -->
-[![License: GPL v3][license-shield]][license-url]
 
 ![预览图](preview.png) <!-- 请将 preview.png 替换为你的预览图片 -->
 
